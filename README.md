@@ -17,8 +17,8 @@ The App is also distributed through the consolidated [WoowTech HA App Store](htt
 ```text
 LAN:        192.168.50.0/24
 Gateway:    192.168.50.1
-LAN NIC:    enp4s0
-WAN NIC:    enp2s0
+LAN NIC:    enp2s0
+WAN NIC:    enp1s0
 HA App:     local_woow_lan_gateway
 Status:     HA Ingress or http://172.30.32.1:45987/health
 ```
@@ -37,7 +37,7 @@ N2840, J1900, and J6412 targets use the same egress policy. Dnsmasq remains resp
 - Established replies to HA's internal management networks remain allowed, while new target-initiated management connections remain blocked.
 - LAN-to-LAN switching, DHCP/DNS, and access to `192.168.50.1` are outside the forwarding policy.
 
-The status service listens on TCP 45987 for Supervisor ingress/watchdog, while the nftables input guard drops access to that port from `enp2s0` and `enp4s0`.
+The status service listens on TCP 45987 for Supervisor ingress/watchdog, while the nftables input guard drops access to that port from `enp1s0` and `enp2s0`.
 
 ## Fail-closed design
 

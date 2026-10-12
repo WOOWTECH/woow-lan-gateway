@@ -9,8 +9,8 @@ class StatusApiContractTest(unittest.TestCase):
         status = GatewayStatus(
             state="enabled",
             expires_at=1045.0,
-            lan_interface="enp4s0",
-            wan_interface="enp2s0",
+            lan_interface="enp2s0",
+            wan_interface="enp1s0",
             source_cidr="192.168.50.0/24",
             rules_checksum="abc123",
         )
@@ -22,8 +22,8 @@ class StatusApiContractTest(unittest.TestCase):
                 "state": "enabled",
                 "enabled": True,
                 "expires_at": 1045.0,
-                "lan_interface": "enp4s0",
-                "wan_interface": "enp2s0",
+                "lan_interface": "enp2s0",
+                "wan_interface": "enp1s0",
                 "source_cidr": "192.168.50.0/24",
                 "rules_checksum": "abc123",
                 "packet_counters": {"outbound": 7, "blocked": 2},

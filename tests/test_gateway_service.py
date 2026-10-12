@@ -37,7 +37,7 @@ class GatewayLifecycleContractTest(unittest.TestCase):
         self.assertEqual("enabled", status.state)
         self.assertTrue(
             firewall.permits(
-                Flow.forward("enp4s0", "enp2s0", "192.168.50.20", "8.8.8.8")
+                Flow.forward("enp2s0", "enp1s0", "192.168.50.20", "8.8.8.8")
             )
         )
         for destination in ("10.0.0.1", "172.16.0.1", "192.168.4.1"):
@@ -45,7 +45,7 @@ class GatewayLifecycleContractTest(unittest.TestCase):
                 self.assertFalse(
                     firewall.permits(
                         Flow.forward(
-                            "enp4s0", "enp2s0", "192.168.50.20", destination
+                            "enp2s0", "enp1s0", "192.168.50.20", destination
                         )
                     )
                 )
@@ -56,7 +56,7 @@ class GatewayLifecycleContractTest(unittest.TestCase):
         service = GatewayService(
             GatewayConfig.fixed_topology(), firewall=firewall, clock=clock
         )
-        flow = Flow.forward("enp4s0", "enp2s0", "192.168.50.20", "8.8.8.8")
+        flow = Flow.forward("enp2s0", "enp1s0", "192.168.50.20", "8.8.8.8")
         service.start()
 
         status = service.stop()
@@ -70,7 +70,7 @@ class GatewayLifecycleContractTest(unittest.TestCase):
         service = GatewayService(
             GatewayConfig.fixed_topology(), firewall=firewall, clock=clock
         )
-        flow = Flow.forward("enp4s0", "enp2s0", "192.168.50.20", "8.8.8.8")
+        flow = Flow.forward("enp2s0", "enp1s0", "192.168.50.20", "8.8.8.8")
         service.start()
 
         clock.now += 44
@@ -89,8 +89,8 @@ class GatewayLifecycleContractTest(unittest.TestCase):
         self.assertTrue(
             firewall.permits(
                 Flow.forward(
+                    "enp1s0",
                     "enp2s0",
-                    "enp4s0",
                     "8.8.8.8",
                     "192.168.50.20",
                     connection_state="established",
@@ -100,8 +100,8 @@ class GatewayLifecycleContractTest(unittest.TestCase):
         self.assertFalse(
             firewall.permits(
                 Flow.forward(
+                    "enp1s0",
                     "enp2s0",
-                    "enp4s0",
                     "8.8.8.8",
                     "192.168.50.20",
                     connection_state="new",
@@ -119,7 +119,7 @@ class GatewayLifecycleContractTest(unittest.TestCase):
         self.assertTrue(
             firewall.permits(
                 Flow.forward(
-                    "enp4s0",
+                    "enp2s0",
                     "hassio",
                     "192.168.50.20",
                     "172.30.33.2",
@@ -130,7 +130,7 @@ class GatewayLifecycleContractTest(unittest.TestCase):
         self.assertFalse(
             firewall.permits(
                 Flow.forward(
-                    "enp4s0",
+                    "enp2s0",
                     "hassio",
                     "192.168.50.20",
                     "172.30.33.2",
@@ -147,7 +147,7 @@ class GatewayLifecycleContractTest(unittest.TestCase):
         ).start()
 
         decision = firewall.decision(
-            Flow.forward("enp4s0", "enp4s0", "192.168.50.20", "192.168.50.21")
+            Flow.forward("enp2s0", "enp2s0", "192.168.50.20", "192.168.50.21")
         )
 
         self.assertEqual(Decision.UNMANAGED, decision)
@@ -166,8 +166,8 @@ class GatewayLifecycleContractTest(unittest.TestCase):
 
         self.assertEqual("degraded", degraded.state)
         self.assertEqual("enabled", repaired.state)
-        self.assertEqual("enp4s0", repaired.lan_interface)
-        self.assertEqual("enp2s0", repaired.wan_interface)
+        self.assertEqual("enp2s0", repaired.lan_interface)
+        self.assertEqual("enp1s0", repaired.wan_interface)
         self.assertEqual("192.168.50.0/24", repaired.source_cidr)
         self.assertTrue(repaired.rules_checksum)
 
@@ -188,8 +188,8 @@ class GatewayLifecycleContractTest(unittest.TestCase):
         clock = MutableClock(1_000.0)
         firewall = MemoryFirewall(clock=clock)
         config = GatewayConfig(
-            lan_interface="enp4s0",
-            wan_interface="enp2s0",
+            lan_interface="enp2s0",
+            wan_interface="enp1s0",
             source_cidr="192.168.50.0/24",
             heartbeat_interval=30,
             lease_timeout=45,
@@ -201,7 +201,7 @@ class GatewayLifecycleContractTest(unittest.TestCase):
 
         self.assertFalse(
             firewall.permits(
-                Flow.forward("enp4s0", "enp2s0", "192.168.50.20", "8.8.8.8")
+                Flow.forward("enp2s0", "enp1s0", "192.168.50.20", "8.8.8.8")
             )
         )
 
@@ -211,7 +211,7 @@ class GatewayLifecycleContractTest(unittest.TestCase):
         service = GatewayService(
             GatewayConfig.fixed_topology(), firewall=firewall, clock=clock
         )
-        flow = Flow.forward("enp4s0", "enp2s0", "192.168.50.20", "8.8.8.8")
+        flow = Flow.forward("enp2s0", "enp1s0", "192.168.50.20", "8.8.8.8")
         service.start()
         clock.now += 30
 

@@ -21,13 +21,21 @@ class AppPackageContractTest(unittest.TestCase):
         config = (ROOT / "app" / "config.yaml").read_text()
 
         for literal in (
-            "lan_interface: enp4s0",
-            "wan_interface: enp2s0",
+            "lan_interface: enp2s0",
+            "wan_interface: enp1s0",
             "source_cidr: 192.168.50.0/24",
             "heartbeat_interval: 15",
             "lease_timeout: 45",
         ):
             self.assertIn(literal, config)
+        self.assertNotIn("enp4s0", config)
+
+    def test_version_is_0_1_6_with_a_changelog_entry(self):
+        config = (ROOT / "app" / "config.yaml").read_text()
+        changelog = (ROOT / "app" / "CHANGELOG.md").read_text()
+
+        self.assertIn("version: 0.1.6", config)
+        self.assertIn("## 0.1.6", changelog)
 
 
 if __name__ == "__main__":

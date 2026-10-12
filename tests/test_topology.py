@@ -5,7 +5,10 @@ from gateway.service import GatewayConfig
 
 
 class SingleCableHostRunner:
-    """Reports a host with only enp1s0 cabled: the default route is on it, enp2s0 has no gateway address."""
+    """A host with only enp1s0 cabled.
+
+    The default route is on enp1s0 and enp2s0 has no gateway address.
+    """
 
     def __init__(self):
         self.commands = []
@@ -19,20 +22,17 @@ class SingleCableHostRunner:
         if command[:5] == ["ip", "-4", "-o", "addr", "show"]:
             return CommandResult(0, "", "")
         if command == ["ip", "-4", "route", "show", "default"]:
-            return CommandResult(0, "default via 192.168.4.1 dev enp1s0 proto dhcp\n", "")
+            return CommandResult(
+                0, "default via 192.168.4.1 dev enp1s0 proto dhcp\n", ""
+            )
         return CommandResult(1, "", "")
 
 
-MUTATING = (
-    ("nft", "-f"),
-    ("nft", "add"),
-    ("nft", "delete"),
-    ("iptables", "-w", "5", "-N"),
-    ("iptables", "-w", "5", "-F"),
-    ("iptables", "-w", "5", "-A"),
-    ("iptables", "-w", "5", "-I"),
-    ("iptables", "-w", "5", "-D"),
-    ("iptables", "-w", "5", "-X"),
+READ_ONLY = (
+    ("ip", "link", "show"),
+    ("ip", "-4", "-o", "addr", "show"),
+    ("ip", "-4", "route", "show"),
+    ("cat",),
 )
 
 
@@ -50,12 +50,12 @@ class DefaultTopologyTest(unittest.TestCase):
         with self.assertRaisesRegex(FirewallError, "enp2s0 does not own"):
             firewall.enable(GatewayConfig.fixed_topology(), expires_at=1_045.0)
 
-        mutations = [
+        not_read_only = [
             command
             for command in runner.commands
-            if any(tuple(command[: len(prefix)]) == prefix for prefix in MUTATING)
+            if not any(tuple(command[: len(prefix)]) == prefix for prefix in READ_ONLY)
         ]
-        self.assertEqual([], mutations)
+        self.assertEqual([], not_read_only)
         self.assertIsNone(firewall.config)
 
 

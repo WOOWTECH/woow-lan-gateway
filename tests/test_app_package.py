@@ -1,3 +1,4 @@
+import re
 import unittest
 from pathlib import Path
 
@@ -30,12 +31,12 @@ class AppPackageContractTest(unittest.TestCase):
             self.assertIn(literal, config)
         self.assertNotIn("enp4s0", config)
 
-    def test_version_is_0_1_6_with_a_changelog_entry(self):
+    def test_current_version_has_a_changelog_entry(self):
         config = (ROOT / "app" / "config.yaml").read_text()
         changelog = (ROOT / "app" / "CHANGELOG.md").read_text()
 
-        self.assertIn("version: 0.1.6", config)
-        self.assertIn("## 0.1.6", changelog)
+        version = re.search(r"^version: (\S+)$", config, re.MULTILINE).group(1)
+        self.assertIn(f"## {version}", changelog)
 
 
 if __name__ == "__main__":

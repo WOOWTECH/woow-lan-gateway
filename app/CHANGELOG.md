@@ -2,7 +2,7 @@
 
 ## 0.1.7
 
-- When the App cannot start (for example the topology check refuses a host where `lan_interface` does not own the gateway address), it now cleans up and stops the container instead of retrying. Before, s6 restarted it about every 2.5 seconds forever, writing the log and the "±Ò°Ê¥¢±Ñ" notification each time while the App kept showing as started.
+- When the App cannot start (for example the topology check refuses a host where `lan_interface` does not own the gateway address), it now cleans up and stops the container instead of retrying. Before, s6 restarted it about every 2.5 seconds forever, writing the log and the "å•Ÿå‹•å¤±æ•—" notification each time while the App kept showing as started.
 - Behaviour change: after a refused start the App stays stopped. Once the second cable is connected, start the App again (or reboot the host). With the Supervisor watchdog enabled, Supervisor may retry a few times before giving up.
 - Options are unchanged; normal stop is unchanged.
 

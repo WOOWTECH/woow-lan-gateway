@@ -60,6 +60,14 @@ class ServiceFinishTest(unittest.TestCase):
         self.assertEqual(["python3 -m gateway.cli cleanup"], calls)
         self.assertIsNone(exitcode)
 
+    def test_finish_has_time_to_clean_up_before_halting(self):
+        # s6-supervise kills finish after timeout-finish ms (5000 when the
+        # file is missing); a killed finish never reaches halt.
+        timeout = FINISH.with_name("timeout-finish")
+
+        self.assertTrue(timeout.exists())
+        self.assertGreater(int(timeout.read_text()), 5000)
+
     def test_stop_by_signal_cleans_up_without_halting(self):
         calls, exitcode = self.finish(256, signal=15)
 

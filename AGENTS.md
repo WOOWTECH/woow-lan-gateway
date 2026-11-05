@@ -13,7 +13,13 @@ release mechanism is described in the Woow_HA_App_Store README (section
    `Upgrade comparison / compare` (pipeline #89); treat a failure as blocking.
    It compares each addon whose version the PR changes with the latest Stable
    Release. A PR that changes no version passes it in seconds. The result is
-   in the job summary.
+   in the job summary. It also runs the upgrade test (pipeline #144): the
+   Store rebuilds the latest Release and the PR for amd64, starts the Release
+   under a mock Supervisor, then the PR's version on the same data, and fails
+   when either does not start. For this addon the Store registry approves
+   skipping it for now (`skip_upgrade_test`, pipeline #158: it needs a
+   physical `enp2s0`, which a GitHub runner does not have), so the summary
+   shows it as not run with that reason.
 3. **Breaking changes must be declared in `upgrade-notes.yaml`** next to the
    addon's `config.yaml` (here `app/upgrade-notes.yaml`). Create the file only
    when the upgrade comparison asks for it; copy `change` and `key` from its

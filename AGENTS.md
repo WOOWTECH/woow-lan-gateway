@@ -18,11 +18,13 @@ release mechanism is described in the Woow_HA_App_Store README (section
    under a mock Supervisor, then the PR's version on the same data, and fails
    when either does not start. For this addon the Store registry skips it
    permanently (`skip_upgrade_test`, owner decision in pipeline #158), so the
-   summary shows it as not run with that reason. To start, the gateway needs
-   `host_network`, `NET_ADMIN`, the fixed interfaces `enp2s0` (LAN) and
-   `enp1s0` (WAN), nftables and a writable `net.ipv4.ip_forward`; a GitHub
-   runner cannot give it these, and fake interfaces would only prove that it
-   starts, not its NAT, DHCP or fail-closed behaviour. On-device testing on
+   summary shows it as not run with that reason. The upgrade test runs
+   `host_network` addons on the runner's host network, but to start, the
+   gateway also needs `NET_ADMIN`, the fixed interfaces `enp2s0` (LAN) and
+   `enp1s0` (WAN), nftables and IPv4 forwarding that the host has already
+   enabled (it only reads `net.ipv4.ip_forward`); a GitHub runner cannot give
+   it these, and fake interfaces would only prove that it starts, not its NAT
+   or fail-closed behaviour. On-device testing on
    the Enrollment LAN covers it instead (pipeline
    `.out-of-scope/lan-gateway-upgrade-test-on-runner.md`). Do not work around
    it with `upgrade-check/options.yaml` (for example `eth0`/`eth1`): that

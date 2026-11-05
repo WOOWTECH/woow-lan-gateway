@@ -16,10 +16,17 @@ release mechanism is described in the Woow_HA_App_Store README (section
    in the job summary. It also runs the upgrade test (pipeline #144): the
    Store rebuilds the latest Release and the PR for amd64, starts the Release
    under a mock Supervisor, then the PR's version on the same data, and fails
-   when either does not start. For this addon the Store registry approves
-   skipping it for now (`skip_upgrade_test`, pipeline #158: it needs a
-   physical `enp2s0`, which a GitHub runner does not have), so the summary
-   shows it as not run with that reason.
+   when either does not start. For this addon the Store registry skips it
+   permanently (`skip_upgrade_test`, owner decision in pipeline #158), so the
+   summary shows it as not run with that reason. To start, the gateway needs
+   `host_network`, `NET_ADMIN`, the fixed interfaces `enp2s0` (LAN) and
+   `enp1s0` (WAN), nftables and a writable `net.ipv4.ip_forward`; a GitHub
+   runner cannot give it these, and fake interfaces would only prove that it
+   starts, not its NAT, DHCP or fail-closed behaviour. On-device testing on
+   the Enrollment LAN covers it instead (pipeline
+   `.out-of-scope/lan-gateway-upgrade-test-on-runner.md`). Do not work around
+   it with `upgrade-check/options.yaml` (for example `eth0`/`eth1`): that
+   would not test the shipped defaults.
 3. **Breaking changes must be declared in `upgrade-notes.yaml`** next to the
    addon's `config.yaml` (here `app/upgrade-notes.yaml`). Create the file only
    when the upgrade comparison asks for it; copy `change` and `key` from its
